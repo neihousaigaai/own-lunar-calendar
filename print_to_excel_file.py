@@ -2,6 +2,8 @@ import get_data_HND_calendar
 from openpyxl import Workbook
 from openpyxl.styles import Font, Border, Side, Alignment, colors
 
+days_of_week = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
+
 
 def read_days_off():
 	fi = open("days_off.txt", "r")
@@ -9,9 +11,18 @@ def read_days_off():
 
 
 def print_a_year(year, init_col, init_row, cnt_each):
+	def is_dayoff(date, month, lunar):
+		if not lunar and "{}/{}".format(date, month) in days_off:
+			return True
+
+		elif lunar and "{}/{} (AL)".format(date, month) in days_off:
+			return True
+
+		else:
+			return False
+
 	def print_month(month, year, f_col, f_row):
 		lst = get_data_HND_calendar.crawl_month(month, year)  # or get_data.crawl_month(month, year) instead
-		days_off = read_days_off()
 
 		# style
 		solar_ft_weekday = Font(name='Comic Sans MS', size=20, color="000000")
@@ -23,6 +34,7 @@ def print_a_year(year, init_col, init_row, cnt_each):
 		lower_border = Border(bottom=line, left=line, right=line)
 		left_align = Alignment(horizontal='left', vertical='center')
 		right_align = Alignment(horizontal='right', vertical='center')
+		center_align = Alignment(horizontal='center', vertical='center')
 
 		# header
 		month_cell = sheet.cell(column=f_col, row=f_row)
@@ -35,20 +47,65 @@ def print_a_year(year, init_col, init_row, cnt_each):
 		year_cell.font = Font(name='Comic Sans MS', size=30)
 		year_cell.alignment = right_align
 
+		for i in range(7):
+			day_cell = sheet.cell(column=f_col+i, row=f_row+1)
+			day_cell.value = days_of_week[i]
+
+			if i == 5:
+				day_cell.font = Font(name='Comic Sans MS', size=12, color=colors.BLUE)
+			elif i == 6:
+				day_cell.font = Font(name='Comic Sans MS', size=12, color=colors.RED)
+			else:
+				day_cell.font = Font(name='Comic Sans MS', size=12)
+			day_cell.border = upper_border
+			day_cell.alignment = center_align
+
+		l_month = ''
+		l_date = ''
+		prev_day_coor = (0, 0)
+
 		for i in range(len(lst)):
 			for j in range(7):
 				upper_cell = sheet.cell(column=f_col+j, row=f_row+2+2*i)
 				lower_cell = sheet.cell(column=f_col+j, row=f_row+2+2*i+1)
 
 				if lst[i][j] is not None:  # assign data
-					upper_cell.value = lst[i][j][0]
-					lower_cell.value = lst[i][j][1]
+					upper_cell.value = lst[i][j][0]  # solar date
+					lower_cell.value = lst[i][j][1]  # lunar date
 
-					if j == 5:
+					if lst[i][j][1].find('/') != -1:  # new lunar/solar month
+						l_date = lst[i][j][1][:lst[i][j][1].find('/')]
+						if lst[i][j][1].find('(') != -1:  # ex: 1/3 (D/T)
+							l_month = lst[i][j][1][lst[i][j][1].find('/')+1:lst[i][j][1].find(' ')]
+						else:
+							l_month = lst[i][j][1][lst[i][j][1].find('/')+1:]
+
+					else:
+						l_date = lst[i][j][1]
+
+					# check day-off first
+					if lst[i][j] is not None and is_dayoff(lst[i][j][0], month, False):
+						upper_cell.font = solar_ft_Sun
+
+					elif lst[i][j] is not None and is_dayoff(l_date, l_month, True):
+						if l_date == '30' and l_month == '12':  # New Year's Eve on 30/12
+							prev_cell = sheet.cell(column=f_col+prev_day_coor[1], row=f_row+2+2*prev_day_coor[0]+1)
+							prev_cell.font = Font(color="000000")  # unmark 29/12 as day off
+
+							prev_cell = sheet.cell(column=f_col+prev_day_coor[1], row=f_row+2+2*prev_day_coor[0])
+							if prev_day_coor[1] == 5:
+								prev_cell.font = solar_ft_Sat
+							elif prev_day_coor[1] == 6:
+								prev_cell.font = solar_ft_Sun
+							else:
+								prev_cell.font = solar_ft_weekday
+
+						upper_cell.font = solar_ft_Sun
+						lower_cell.font = Font(color=colors.RED)
+
+					elif j == 5:
 						upper_cell.font = solar_ft_Sat
 					elif j == 6:
-						upper_cell.font = solar_ft_Sun
-					elif lst[i][j] is not None and "{}/{}".format(lst[i][j][0], month) in days_off:
 						upper_cell.font = solar_ft_Sun
 					else:
 						upper_cell.font = solar_ft_weekday
@@ -58,6 +115,10 @@ def print_a_year(year, init_col, init_row, cnt_each):
 
 				upper_cell.alignment = left_align
 				lower_cell.alignment = right_align
+
+				prev_day_coor = (i, j)
+
+	days_off = read_days_off()
 
 	wb = Workbook()
 	sheet = wb.active
