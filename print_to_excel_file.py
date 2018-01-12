@@ -133,7 +133,7 @@ def print_a_year(year, init_col, init_row, cnt_each):
 		if month != 12 and month % cnt_each == 0:
 			sheet = wb.create_sheet("Sheet" + str(month//cnt_each + 1))
 
-	wb.save('E:/neihousaigaai/own-lunar-calendar/calendar.xlsx')
+	wb.save('calendar.xlsx')
 
 
 if __name__ == '__main__':
