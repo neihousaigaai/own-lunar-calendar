@@ -1,6 +1,7 @@
-import get_data_HND_calendar
 from openpyxl import Workbook
 from openpyxl.styles import Font, Border, Side, Alignment, colors
+import get_data_HND_calendar
+import get_data_offline
 
 days_of_week = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
 
@@ -10,7 +11,7 @@ def read_days_off():
 	return [x.rstrip('\n') for x in fi.readlines() if x != '']
 
 
-def print_a_year(year, init_col, init_row, cnt_each):
+def print_a_year(year, init_col, init_row, cnt_each, mode):
 	def is_dayoff(date, month, lunar):
 		if not lunar and "{}/{}".format(date, month) in days_off:
 			return True
@@ -21,8 +22,11 @@ def print_a_year(year, init_col, init_row, cnt_each):
 		else:
 			return False
 
-	def print_month(month, year, f_col, f_row):
-		lst = get_data_HND_calendar.crawl_month(month, year)  # or get_data.crawl_month(month, year) instead
+	def print_month(month, year, f_col, f_row, online):
+		if online:
+			lst = get_data_HND_calendar.crawl_month(month, year)  # or get_data.crawl_month(month, year) instead
+		else:
+			lst = get_data_offline.get_month(month, year)
 
 		# style
 		solar_ft_weekday = Font(name='Comic Sans MS', size=20, color="000000")
@@ -126,9 +130,9 @@ def print_a_year(year, init_col, init_row, cnt_each):
 
 	for month in range(1, 12+1):
 		if cnt_each in [6, 12]:
-			print_month(month, year, init_col+8*((month-1)%3), init_row+15*((month-1)//3))
+			print_month(month, year, init_col+8*((month-1)%3), init_row+15*((month-1)//3), mode)
 		else:  # <= 3
-			print_month(month, year, init_col+8*((month-1)%cnt_each), init_row)
+			print_month(month, year, init_col+8*((month-1)%cnt_each), init_row, mode)
 
 		if month != 12 and month % cnt_each == 0:
 			sheet = wb.create_sheet("Sheet" + str(month//cnt_each + 1))
@@ -143,7 +147,10 @@ if __name__ == '__main__':
 		if cnt_in_one.isnumeric() and int(cnt_in_one) in [1, 2, 3, 6, 12]:
 			cnt_in_one = int(cnt_in_one)
 			break
-		else:
-			continue
 
-	print_a_year(year, 1, 1, cnt_in_one)
+	while True:
+		mode = input("Online mode? [y/n]: ")
+		if mode in 'yYnN':
+			break
+
+	print_a_year(year, 1, 1, cnt_in_one, mode in 'yY')
