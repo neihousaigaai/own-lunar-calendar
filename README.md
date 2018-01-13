@@ -1,6 +1,8 @@
 # own-lunar-calendar
 Auto-generate a whole-year calendar (with solar and lunar calendar) to `.xlsx` file
 
+See Vietnamese version [here](/README%20(vi).md)
+
 ## About this tool
 - Written in Python 3
 - About online mode: use package `urllib.request` to crawl lunar calendar from:
