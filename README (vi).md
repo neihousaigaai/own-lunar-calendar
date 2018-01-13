@@ -8,7 +8,7 @@ Tự động tạo lịch Âm Dương của 1 năm bất kì dưới dạng file
     - https://www.informatik.uni-leipzig.de/~duc/amlich (Âm lịch của Hồ Ngọc Đức)
     - http://lichvannien365.com (I'm Feeling Lucky ~)
 - Với offline mode: sử dụng code chuyển Âm lịch share trên https://www.informatik.uni-leipzig.de/~duc để chuyển lịch dương sang lịch âm.
-- Sử dụng package `openpyxl` để truyền data vào fle `.xlsx`.
+- Sử dụng package `openpyxl` để truyền data vào file `.xlsx`.
 
 ## Hướng dẫn sử dụng
 - Chạy trực tiếp file `print_to_excel_file.py`. Có các mục bạn cần nhập:
