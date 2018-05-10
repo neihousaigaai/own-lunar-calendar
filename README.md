@@ -13,7 +13,7 @@ See Vietnamese version [here](/README%20(vi).md)
 
 ## Changelog
 
-- ver 1.1, 10 May 2018: save the generated calendar to the chosen directory.
+- ver 1.1, 10 May 2018: add save the generated calendar to the chosen directory feature.
 
 ## How to use
 - Run file `print_to_excel_file.py` directly. You have to input:
@@ -29,8 +29,9 @@ How many months in each sheet? [1/2/3/6/12]: 12
 Online mode? [y/n]: n
 Save file as (.xlsx): calendar2018.xlsx
 ```
-You can click [/demo](/demo) to see demo files.
+
+- Open calendar file in the chosen folder to see the calendar. You can click [/demo](/demo) to see demo files.
 
 ## Upcoming features
 - [ ] GUI for the app.
-- [x] Choose directory to save file instead of default directory (as same folder as file `.py`) **(from 10 May 2018)**
+- [x] Choose directory to save file instead of default directory (as same folder as file `.py`) **(added from 10 May 2018)**
