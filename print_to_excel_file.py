@@ -11,7 +11,7 @@ def read_days_off():
 	return [x.rstrip('\n') for x in fi.readlines() if x != '']
 
 
-def print_a_year(year, init_col, init_row, cnt_each, mode):
+def print_a_year(year, init_col, init_row, cnt_each, mode, filename):
 	def is_dayoff(date, month, lunar):
 		if not lunar and "{}/{}".format(date, month) in days_off:
 			return True
@@ -29,9 +29,12 @@ def print_a_year(year, init_col, init_row, cnt_each, mode):
 			lst = get_data_offline.get_month(month, year)
 
 		# style
-		solar_ft_weekday = Font(name='Comic Sans MS', size=20, color="000000")
-		solar_ft_Sat = Font(name='Comic Sans MS', size=20, color=colors.BLUE)
-		solar_ft_Sun = Font(name='Comic Sans MS', size=20, color=colors.RED)
+		solar_ft_weekday = Font(name='Comic Sans MS', size=24, color="000000")
+		solar_ft_Sat = Font(name='Comic Sans MS', size=24, color=colors.BLUE)
+		solar_ft_Sun = Font(name='Comic Sans MS', size=24, color=colors.RED)  # font for Sunday/day off cell
+
+		lunar_ft_normal = Font(size=11, color="000000")
+		lunar_ft_dayoff = Font(size=11, color=colors.RED)  # font for day off cell
 
 		line = Side(border_style="thin", color="000000")
 		upper_border = Border(top=line, left=line, right=line)
@@ -69,15 +72,34 @@ def print_a_year(year, init_col, init_row, cnt_each, mode):
 		prev_day_coor = (0, 0)
 
 		for i in range(len(lst)):
-			for j in range(7):
+			for j in range(7):  # seven days of week
 				upper_cell = sheet.cell(column=f_col+j, row=f_row+2+2*i)
 				lower_cell = sheet.cell(column=f_col+j, row=f_row+2+2*i+1)
 
-				if lst[i][j] is not None:  # assign data
+				# set style
+				upper_cell.border = upper_border
+				lower_cell.border = lower_border
+
+				upper_cell.alignment = left_align
+				lower_cell.alignment = right_align
+
+				# assign data
+				if lst[i][j] is not None:
 					upper_cell.value = lst[i][j][0]  # solar date
 					lower_cell.value = lst[i][j][1]  # lunar date
 
-					if lst[i][j][1].find('/') != -1:  # new lunar/solar month
+					# default state
+					if j == 5:
+						upper_cell.font = solar_ft_Sat
+					elif j == 6:
+						upper_cell.font = solar_ft_Sun
+					else:
+						upper_cell.font = solar_ft_weekday
+
+					lower_cell.font = lunar_ft_normal
+
+					# new lunar/solar month
+					if lst[i][j][1].find('/') != -1:
 						l_date = lst[i][j][1][:lst[i][j][1].find('/')]
 						if lst[i][j][1].find('(') != -1:  # ex: 1/3 (D/T)
 							l_month = lst[i][j][1][lst[i][j][1].find('/')+1:lst[i][j][1].find(' ')]
@@ -87,38 +109,26 @@ def print_a_year(year, init_col, init_row, cnt_each, mode):
 					else:
 						l_date = lst[i][j][1]
 
-					# check day-off first
+					# solar date is a day off
 					if lst[i][j] is not None and is_dayoff(lst[i][j][0], month, False):
 						upper_cell.font = solar_ft_Sun
 
+					# lunar date is a day off
 					elif lst[i][j] is not None and is_dayoff(l_date, l_month, True):
 						if l_date == '30' and l_month == '12':  # New Year's Eve on 30/12
-							prev_cell = sheet.cell(column=f_col+prev_day_coor[1], row=f_row+2+2*prev_day_coor[0]+1)
-							prev_cell.font = Font(color="000000")  # unmark 29/12 as day off
+							prev_lunar_cell = sheet.cell(column=f_col+prev_day_coor[1], row=f_row+2+2*prev_day_coor[0]+1)
+							prev_lunar_cell.font = lunar_ft_normal  # unmark 29/12 as a day off
 
-							prev_cell = sheet.cell(column=f_col+prev_day_coor[1], row=f_row+2+2*prev_day_coor[0])
+							prev_solar_cell = sheet.cell(column=f_col+prev_day_coor[1], row=f_row+2+2*prev_day_coor[0])
 							if prev_day_coor[1] == 5:
-								prev_cell.font = solar_ft_Sat
+								prev_solar_cell.font = solar_ft_Sat
 							elif prev_day_coor[1] == 6:
-								prev_cell.font = solar_ft_Sun
+								prev_solar_cell.font = solar_ft_Sun
 							else:
-								prev_cell.font = solar_ft_weekday
+								prev_solar_cell.font = solar_ft_weekday
 
 						upper_cell.font = solar_ft_Sun
-						lower_cell.font = Font(color=colors.RED)
-
-					elif j == 5:
-						upper_cell.font = solar_ft_Sat
-					elif j == 6:
-						upper_cell.font = solar_ft_Sun
-					else:
-						upper_cell.font = solar_ft_weekday
-
-				upper_cell.border = upper_border
-				lower_cell.border = lower_border
-
-				upper_cell.alignment = left_align
-				lower_cell.alignment = right_align
+						lower_cell.font = lunar_ft_dayoff
 
 				prev_day_coor = (i, j)
 
@@ -137,7 +147,7 @@ def print_a_year(year, init_col, init_row, cnt_each, mode):
 		if month != 12 and month % cnt_each == 0:
 			sheet = wb.create_sheet("Sheet" + str(month//cnt_each + 1))
 
-	wb.save('calendar.xlsx')
+	wb.save(filename)
 
 
 if __name__ == '__main__':
@@ -149,8 +159,15 @@ if __name__ == '__main__':
 			break
 
 	while True:
-		mode = input("Online mode? [y/n]: ")
-		if mode in 'yYnN':
+		online = input("Online mode? [y/n]: ")
+		if online in 'yYnN':
 			break
 
-	print_a_year(year, 1, 1, cnt_in_one, mode in 'yY')
+	while True:
+		save_dir = input("Save file as (.xlsx): ")
+		if save_dir.endswith('.xlsx'):
+			break
+
+	print_a_year(year, 1, 1, cnt_in_one, online in 'yY', save_dir)
+
+	print("DONE.")
