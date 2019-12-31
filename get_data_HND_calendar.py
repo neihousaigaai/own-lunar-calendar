@@ -33,8 +33,10 @@ def crawl_month(month, year):
 		line = info[i]
 
 		if line.find(' {}/{}/{} -'.format(loc_date, month, year)) != -1:
+			# print(line)
 			full_date = line[line.find('title="')+len('title="'):line.find('" onClick=')]
-			lunar_date = line[line.find('<div class="am">')+len('<div class="am">'):line.find('</div></td>')]
+			lunar_date = line[line.rfind('<div class="am'):line.find('</div></td>')]
+			lunar_date = lunar_date[lunar_date.find(">")+1:]
 			day_of_week = full_date.split(' ')[1]
 			lunar_date = lunar_date.replace("Đ", " (Đ)").replace("T", " (T)")
 			calendar[-1][conv_day[day_of_week]] = (loc_date, lunar_date)

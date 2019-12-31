@@ -33,8 +33,8 @@ def print_a_year(year, init_col, init_row, cnt_each, mode, filename):
 		solar_ft_Sat = Font(name='Comic Sans MS', size=24, color=colors.BLUE)
 		solar_ft_Sun = Font(name='Comic Sans MS', size=24, color=colors.RED)  # font for Sunday/day off cell
 
-		lunar_ft_normal = Font(size=11, color="000000")
-		lunar_ft_dayoff = Font(size=11, color=colors.RED)  # font for day off cell
+		lunar_ft_normal = Font(size=14, color="000000")
+		lunar_ft_dayoff = Font(size=14, color=colors.RED)  # font for day off cell
 
 		line = Side(border_style="thin", color="000000")
 		upper_border = Border(top=line, left=line, right=line)
@@ -59,11 +59,11 @@ def print_a_year(year, init_col, init_row, cnt_each, mode, filename):
 			day_cell.value = days_of_week[i]
 
 			if i == 5:
-				day_cell.font = Font(name='Comic Sans MS', size=12, color=colors.BLUE)
+				day_cell.font = Font(size=14, color=colors.BLUE)
 			elif i == 6:
-				day_cell.font = Font(name='Comic Sans MS', size=12, color=colors.RED)
+				day_cell.font = Font(size=14, color=colors.RED)
 			else:
-				day_cell.font = Font(name='Comic Sans MS', size=12)
+				day_cell.font = Font(size=14)
 			day_cell.border = upper_border
 			day_cell.alignment = center_align
 

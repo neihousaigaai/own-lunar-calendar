@@ -13,6 +13,7 @@ Tự động tạo lịch Âm Dương của 1 năm bất kì dưới dạng file
 ## Changelog
 
 - ver 1.1, 10 May 2018: thêm tính năng thay đổi đường dẫn lưu file lịch.
+- ver 1.2, 31 Dec 2019: sửa lỗi hiển thị lịch âm của tháng nhuận khi chọn online mode.
 
 ## Hướng dẫn sử dụng
 - Chạy trực tiếp file `print_to_excel_file.py`. Có các mục bạn cần nhập:
