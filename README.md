@@ -14,6 +14,7 @@ See Vietnamese version [here](/README%20(vi).md)
 ## Changelog
 
 - ver 1.1, 10 May 2018: add save the generated calendar to the chosen directory feature.
+- ver 1.2, 31 Dec 2019: fix lunar calendar's cells of "tháng nhuận" when choosing online mode.
 
 ## How to use
 - Run file `print_to_excel_file.py` directly. You have to input:
