@@ -3,10 +3,9 @@
 Tự động tạo lịch Âm Dương của 1 năm bất kì dưới dạng file `.xlsx`
 
 ## Về tool
+
 - Code bằng Python 3
-- Với online mode: sử dụng package `urllib.request` để crawl data âm lịch từ:
-    - https://www.informatik.uni-leipzig.de/~duc/amlich (Âm lịch của Hồ Ngọc Đức)
-    - http://lichvannien365.com (I'm Feeling Lucky ~)
+- Với online mode: sử dụng package `urllib.request` để crawl data âm lịch từ [Âm lịch của Hồ Ngọc Đức](https://www.informatik.uni-leipzig.de/~duc/amlich).
 - Với offline mode: sử dụng code chuyển Âm lịch share trên https://www.informatik.uni-leipzig.de/~duc để chuyển lịch dương sang lịch âm.
 - Sử dụng package `openpyxl` để truyền data vào file `.xlsx`.
 
@@ -14,8 +13,10 @@ Tự động tạo lịch Âm Dương của 1 năm bất kì dưới dạng file
 
 - ver 1.1, 10 May 2018: thêm tính năng thay đổi đường dẫn lưu file lịch.
 - ver 1.2, 31 Dec 2019: sửa lỗi hiển thị lịch âm của tháng nhuận khi chọn online mode.
+- ver 1.3, 29 Dec 2020: thay đổi bên trong code, bỏ chức năng crawl data từ lichvannien365.
 
 ## Hướng dẫn sử dụng
+
 - Chạy trực tiếp file `print_to_excel_file.py`. Có các mục bạn cần nhập:
   - `Enter a year`: Nhập năm bạn cần tạo lịch, ví dụ năm 2018.
   - `How many months in each sheet? [1/2/3/6/12]`: Số tháng bạn muốn in trên 1 sheet của cả quyển lịch.
@@ -33,5 +34,6 @@ Save file as (.xlsx): calendar2018.xlsx
 - Mở file lịch đã được lưu vào đường dẫn đã chọn. Bạn có thể vào [/demo](/demo) để xem thử các file demo.
 
 ## Tính năng mới
+
 - [ ] Viết GUI.
 - [x] Thêm tính năng chọn nơi lưu file khác thay vì đường dẫn mặc định (cùng thư mục với file `.py`) **(đã thêm từ 10/5/2018)**

@@ -16,13 +16,13 @@ def jdFromDate(dd, mm, yy):
 	y = yy + 4800 - a
 	m = mm + 12*a - 3
 	jd = dd + int((153*m + 2) / 5.) + 365*y + int(y/4.) - int(y/100.) + int(y/400.) - 32045
-	if (jd < 2299161):
+	if jd < 2299161:
 		jd = dd + int((153*m + 2)/5.) + 365*y + int(y/4.) - 32083
 	return jd
 
 
 def jdToDate(jd):  # Convert a Julian day number to day/month/year. jd is an integer.
-	if (jd > 2299160):  ## After 5/10/1582, Gregorian calendar
+	if jd > 2299160:  ## After 5/10/1582, Gregorian calendar
 		a = jd + 32044
 		b = int((4*a + 3) / 146097.)
 		c = a - int((b*146097) / 4.)
@@ -64,7 +64,7 @@ def NewMoon(k):
 	C1 = C1 - 0.0074*math.sin(dr*(M - Mpr)) + 0.0004*math.sin(dr*(2*F + M))
 	C1 = C1 - 0.0004*math.sin(dr*(2*F - M)) - 0.0006*math.sin(dr*(2*F + Mpr))
 	C1 = C1 + 0.0010*math.sin(dr*(2*F - Mpr)) + 0.0005*math.sin(dr*(2*Mpr + M))
-	if (T < -11):
+	if T < -11:
 		deltat= 0.001 + 0.000839*T + 0.0002261*T2 - 0.00000845*T3 - 0.000000081*T*T3
 	else:
 		deltat= -0.000278 + 0.000265*T + 0.000262*T2
@@ -117,7 +117,7 @@ def getLunarMonth11(yy, timeZone):
 	nm = getNewMoonDay(k, timeZone)
 	sunLong = getSunLongitude(nm, timeZone)
 	#### sun longitude at local midnight
-	if (sunLong >= 9):
+	if sunLong >= 9:
 		nm = getNewMoonDay(k - 1, timeZone)
 	return nm
 
@@ -142,12 +142,12 @@ def S2L(dd, mm, yy, timeZone = 7):
 	dayNumber = jdFromDate(dd, mm, yy)
 	k = int((dayNumber - 2415021.076998695) / 29.530588853)
 	monthStart = getNewMoonDay(k + 1, timeZone)
-	if (monthStart > dayNumber):
+	if monthStart > dayNumber:
 		monthStart = getNewMoonDay(k, timeZone)
 	# alert(dayNumber + " -> " + monthStart)
 	a11 = getLunarMonth11(yy, timeZone)
 	b11 = a11
-	if (a11 >= monthStart):
+	if a11 >= monthStart:
 		lunarYear = yy
 		a11 = getLunarMonth11(yy - 1, timeZone)
 	else:
@@ -157,22 +157,22 @@ def S2L(dd, mm, yy, timeZone = 7):
 	diff = int((monthStart - a11) / 29.)
 	lunarLeap = 0
 	lunarMonth = diff + 11
-	if (b11 - a11 > 365):
+	if b11 - a11 > 365:
 		leapMonthDiff = getLeapMonthOffset(a11, timeZone)
-		if (diff >= leapMonthDiff):
+		if diff >= leapMonthDiff:
 			lunarMonth = diff + 10
-			if (diff == leapMonthDiff):
+			if diff == leapMonthDiff:
 				lunarLeap = 1
-	if (lunarMonth > 12):
+	if lunarMonth > 12:
 		lunarMonth = lunarMonth - 12
-	if (lunarMonth >= 11 and diff < 4):
+	if lunarMonth >= 11 and diff < 4:
 		lunarYear -= 1
 	return [lunarDay, lunarMonth, lunarYear, lunarLeap]
 
 
 def L2S(lunarD, lunarM, lunarY, lunarLeap, tZ = 7):
 	# Convert a lunar date to the corresponding solar date.
-	if (lunarM < 11):
+	if lunarM < 11:
 		a11 = getLunarMonth11(lunarY - 1, tZ)
 		b11 = getLunarMonth11(lunarY, tZ)
 	else:
@@ -180,16 +180,16 @@ def L2S(lunarD, lunarM, lunarY, lunarLeap, tZ = 7):
 		b11 = getLunarMonth11(lunarY + 1, tZ)
 	k = int(0.5 + (a11 - 2415021.076998695) / 29.530588853)
 	off = lunarM - 11
-	if (off < 0):
+	if off < 0:
 		off += 12
-	if (b11 - a11 > 365):
+	if b11 - a11 > 365:
 		leapOff = getLeapMonthOffset(a11, tZ)
 		leapM = leapOff - 2
-		if (leapM < 0):
+		if leapM < 0:
 			leapM += 12
-		if (lunarLeap != 0 and lunarM != leapM):
+		if lunarLeap != 0 and lunarM != leapM:
 			return [0, 0, 0]
-		elif (lunarLeap != 0 or off >= leapOff):
+		elif lunarLeap != 0 or off >= leapOff:
 			off += 1
 	monthStart = getNewMoonDay(k + off, tZ)
 	return jdToDate(monthStart + lunarD - 1)
