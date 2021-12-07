@@ -61,8 +61,7 @@ class CalendarPrinter:
 				sheet.page_margins.header = 0.125
 				sheet.page_margins.footer = 0.125
 
-				if self.cnt_each >= 3:
-					sheet.page_setup.fitToWidth = True
+				sheet.page_setup.fitToPage = True
 
 				for row_id in range(8 * CalendarPrinter.MAX_MONTHS_IN_ROW):
 					sheet.column_dimensions[get_column_letter(row_id+1)].width = 11
