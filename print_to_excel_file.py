@@ -9,6 +9,7 @@ class CalendarPrinter:
 	DAYS_OF_WEEK_LABEL = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"]
 
 	MAX_MONTHS_IN_ROW = 3
+	MAX_MONTHS_IN_ROW_PORTRAIT = 1
 
 	# style
 	month_year_title = Font(name="Comic Sans MS", size=30)
@@ -38,6 +39,12 @@ class CalendarPrinter:
 		self.init_row = init_row
 		self.cnt_each = cnt_each
 
+	def get_max_month_in_row(self, orientation):
+		if orientation == "landscape":
+			return CalendarPrinter.MAX_MONTHS_IN_ROW
+
+		return CalendarPrinter.MAX_MONTHS_IN_ROW_PORTRAIT
+
 	@staticmethod
 	def read_days_off():
 		fi = open("days_off.txt", "r")
@@ -48,17 +55,19 @@ class CalendarPrinter:
 		date_with_year_format = "{}/{}/{}".format(date, month, self.year) + (" (AL)" if lunar else "")
 		return date_format in self.days_off or date_with_year_format in self.days_off
 
-	def print_a_year(self, is_online_mode, filename):
+	def print_a_year(self, is_online_mode, filename, orientation="landscape"):
 		wb = Workbook()
 		sheet = wb.active
 		sheet.title = "Sheet1"
 
+		max_month_in_row = self.get_max_month_in_row(orientation)
+
 		for month in range(1, 12 + 1):
 			if (month - 1) % self.cnt_each == 0:
 				if month > 1:
-					sheet = wb.create_sheet("Sheet" + str(month // self.cnt_each))
+					sheet = wb.create_sheet("Sheet" + str(month // self.cnt_each + (self.cnt_each > 1)))
 
-				sheet.set_printer_settings(sheet.PAPERSIZE_A4, sheet.ORIENTATION_LANDSCAPE)
+				sheet.set_printer_settings(sheet.PAPERSIZE_A5, orientation)
 				sheet.page_margins.left = 0.393700787  # 1cm
 				sheet.page_margins.right = 0.393700787  # 1cm
 				sheet.page_margins.top = 0.393700787  # 1cm
@@ -70,24 +79,25 @@ class CalendarPrinter:
 				sheet.print_options.horizontalCentered = True
 				# sheet.print_options.verticalCentered = True
 
-				for col_id in range(1, 8 * min(self.cnt_each, CalendarPrinter.MAX_MONTHS_IN_ROW)):
+				for col_id in range(1, 8 * min(self.cnt_each, max_month_in_row)):
 					# unit: number of characters
 					# number of pixels = 7 * number of characters (ref: https://stackoverflow.com/a/63271915/)
 					sheet.column_dimensions[get_column_letter(col_id)].width = 15
 
-			if self.cnt_each > CalendarPrinter.MAX_MONTHS_IN_ROW:
+			month_relative_idx = (month - 1) % self.cnt_each
+			if self.cnt_each > max_month_in_row:
 				self.print_month(
 					sheet,
 					self.year, month,
-					self.init_col + 8 * ((month - 1) % CalendarPrinter.MAX_MONTHS_IN_ROW),
-					self.init_row + 15 * ((month - 1) // CalendarPrinter.MAX_MONTHS_IN_ROW),
+					self.init_col + 8 * (month_relative_idx % max_month_in_row),
+					self.init_row + 15 * (month_relative_idx // max_month_in_row),
 					is_online_mode
 				)
 			else:
 				self.print_month(
 					sheet,
 					self.year, month,
-					self.init_col + 8 * ((month - 1) % self.cnt_each),
+					self.init_col + 8 * month_relative_idx,
 					self.init_row,
 					is_online_mode
 				)
