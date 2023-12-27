@@ -18,11 +18,13 @@ See Vietnamese version [here](/README%20(vi).md)
 
 ## How to use
 
-- Run file `print_to_excel_file.py` directly. You have to input:
-  - `Enter a year`: Enter a year which you want to create  calendar, i.e: 2018.
-  - `How many months in each sheet? [1/2/3/6/12]`: Number of months you want to print on a sheet of a worksheet.
-  - `Online mode? [y/n]`: Choose online mode or offline mode. Ignore case.
-  - `Save file as (.xlsx)`: Save the calendar to the directory.
+Run file `main.py` directly. Command-line arguments are also accepted.
+
+If command-line arguments are missed, you have to input:
+- `Enter a year`: Enter a year which you want to create  calendar, i.e: 2018.
+- `How many months in each sheet? [1/2/3/6/12]`: Number of months you want to print on a sheet of a worksheet.
+- `Online mode? [y/n]`: Choose online mode or offline mode. Ignore case.
+- `Save file as (.xlsx)`: Save the calendar to the directory.
 
 i.e:
 ```

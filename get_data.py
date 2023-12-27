@@ -1,11 +1,15 @@
+import datetime
+
 import urllib.request
 import urllib.error
 
+import AL_offline
+
 
 def count_days_in_month(year, month):
-	if month in [1, 3, 5, 7, 8, 10, 12]:
+	if month in (1, 3, 5, 7, 8, 10, 12):
 		return 31
-	elif month in [4, 6, 9, 11]:
+	elif month in (4, 6, 9, 11):
 		return 30
 	else:  # month == 2
 		if year % 400 == 0 or (year % 100 != 0 and year % 4 == 0):
@@ -15,11 +19,8 @@ def count_days_in_month(year, month):
 
 
 def get_month_offline(year, month):
-	if not (1 <= month <= 12):  # invalid month
+	if not 1 <= month <= 12:  # invalid month
 		return []
-
-	import AL_offline
-	import datetime
 
 	days = count_days_in_month(year, month)
 	day_of_week = datetime.date(year, month, 1).weekday()  # Monday
@@ -45,7 +46,7 @@ def get_month_offline(year, month):
 
 
 def crawl_month_amlich(year, month):
-	if not (1 <= month <= 12):  # invalid month
+	if not 1 <= month <= 12:  # invalid month
 		return []
 
 	link = "https://www.informatik.uni-leipzig.de/~duc/amlich/PHP/index.php?dd=1&mm={}&yy={}".format(month, year)
@@ -62,14 +63,11 @@ def crawl_month_amlich(year, month):
 	days = count_days_in_month(year, month)
 	info = [x.decode() for x in f.readlines()]
 
-	i = 0
 	loc_date = 1
 	calendar = [[None] * 7]
 	conv_day = {"Hai": 0, "Ba": 1, "Tư": 2, "Năm": 3, "Sáu": 4, "Bảy": 5, "Nhật": 6}
 
-	while i < len(info):
-		line = info[i]
-
+	for i, line in enumerate(info):
 		if line.find(' {}/{}/{} -'.format(loc_date, month, year)) != -1:
 			# print(line)
 			full_date = line[line.find('title="')+len('title="'):line.find('" onClick=')]
@@ -80,13 +78,11 @@ def crawl_month_amlich(year, month):
 			calendar[-1][conv_day[day_of_week]] = (loc_date, lunar_date)
 
 			if day_of_week == "Nhật" and loc_date + 1 <= days:
-				calendar.append([None]*7)
+				calendar.append([None] * 7)
 
 			loc_date += 1
 
 		if loc_date > days:
 			break
-
-		i += 1
 
 	return calendar
