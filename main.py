@@ -35,5 +35,8 @@ if __name__ == '__main__':
 		_save_dir = input_while_not("Save file as (.xlsx): ", lambda x: x.endswith('.xlsx'))
 
 	c = CalendarPrinter(_year, 1, 1, _cnt_in_one)
-	c.print_a_year(_online in 'yY', _save_dir, 'landscape')
+	if _cnt_in_one > 1:
+		c.print_a_year(_online in 'yY', _save_dir, "A4", "portrait")
+	else:
+		c.print_a_year(_online in 'yY', _save_dir, "A5", "landscape")
 	print("DONE.")

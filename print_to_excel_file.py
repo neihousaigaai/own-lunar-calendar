@@ -1,6 +1,7 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font, Border, Side, Alignment
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.worksheet import Worksheet
 
 import get_data
 
@@ -55,7 +56,7 @@ class CalendarPrinter:
 		date_with_year_format = "{}/{}/{}".format(date, month, self.year) + (" (AL)" if lunar else "")
 		return date_format in self.days_off or date_with_year_format in self.days_off
 
-	def print_a_year(self, is_online_mode, filename, orientation="landscape"):
+	def print_a_year(self, is_online_mode, filename, papersize="A4", orientation="landscape"):
 		wb = Workbook()
 		sheet = wb.active
 		sheet.title = "Sheet1"
@@ -67,7 +68,7 @@ class CalendarPrinter:
 				if month > 1:
 					sheet = wb.create_sheet("Sheet" + str(month // self.cnt_each + (self.cnt_each > 1)))
 
-				sheet.set_printer_settings(sheet.PAPERSIZE_A5, orientation)
+				sheet.set_printer_settings(getattr(Worksheet, "PAPERSIZE_" + papersize.upper()), orientation)
 				sheet.page_margins.left = 0.393700787  # 1cm
 				sheet.page_margins.right = 0.393700787  # 1cm
 				sheet.page_margins.top = 0.393700787  # 1cm
